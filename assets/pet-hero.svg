@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="ペット写真プレースホルダー">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6b7a6b"/>
+      <stop offset="1" stop-color="#94a28c"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#g)"/>
+  <text x="300" y="96" text-anchor="middle" font-family="-apple-system, 'Hiragino Sans', sans-serif" font-size="18" letter-spacing="2" fill="#fffcf6" opacity="0.72">写真プレースホルダー</text>
+  <g fill="#fffcf6" opacity="0.94">
+    <ellipse cx="300" cy="332" rx="86" ry="70"/>
+    <ellipse cx="266" cy="200" rx="29" ry="38"/>
+    <ellipse cx="334" cy="200" rx="29" ry="38"/>
+    <ellipse cx="200" cy="238" rx="26" ry="33"/>
+    <ellipse cx="400" cy="238" rx="26" ry="33"/>
+  </g>
+</svg>
