@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="画像と伝えたいポイントを用意すれば、投稿文生成からInstagram投稿まで自動で運用できる美容室向けデモ。">
-  <title>美容室向け Instagram運用自動化</title>
+  <meta name="description" content="画像と伝えたいポイントを用意すれば、投稿文生成からInstagram投稿まで自動で運用できるトリミングサロン向けデモ。">
+  <title>ペットサロン向け Instagram運用自動化</title>
   <style>
     :root {
       --paper: #f4f0e8;
@@ -712,7 +712,7 @@
 </head>
 <body>
   <nav class="nav">
-    <a class="brand" href="#top"><span class="brand-mark">m</span><span><strong>mellow hair</strong><small>Instagram operation demo</small></span></a>
+    <a class="brand" href="#top"><span class="brand-mark">m</span><span><strong>mellow pet</strong><small>Instagram operation demo</small></span></a>
     <div class="nav-links">
       <a href="#setup">投稿案を作る</a>
       <a href="#routine">運用を見る</a>
@@ -730,7 +730,7 @@
         <div class="actions"><a class="button button-primary" href="#setup">自動生成を試す</a><a class="button button-secondary" href="#routine">運用イメージを見る</a></div>
       </div>
       <div class="hero-visual">
-        <img src="assets/style-bob.png" alt="美容室のボブスタイル">
+        <img src="assets/pet-trim.svg" alt="トリミング後の犬（写真プレースホルダー）">
         <aside class="hero-card"><small>用意するもの</small><strong>画像と、伝えたいポイントだけ。</strong><p>文章作成、ハッシュタグ選定、投稿、履歴更新まですべて自動で進みます。</p></aside>
       </div>
     </section>
@@ -754,7 +754,7 @@
       <div class="section-inner">
         <header class="section-head">
           <div><p class="eyebrow">Salon settings demo</p><h2>伝えたいポイントに従って、<br>投稿文を自動生成。</h2></div>
-          <p class="section-intro">得意な施術、文章の雰囲気、投稿の目的、頻度を最初に設定。以降はそのルールに沿って、毎回の投稿を自動で作成します。</p>
+          <p class="section-intro">得意なメニュー、文章の雰囲気、投稿の目的、頻度を最初に設定。以降はそのルールに沿って、毎回の投稿を自動で作成します。</p>
         </header>
 
         <div class="builder">
@@ -766,9 +766,9 @@
             <div class="field">
               <label>今回の投稿で伝えたいポイント</label>
               <div class="choices">
-                <label class="choice"><input type="radio" name="menu" value="bob" checked><span>朝のお手入れが楽な艶ボブ</span></label>
-                <label class="choice"><input type="radio" name="menu" value="color"><span>肌になじむ透明感カラー</span></label>
-                <label class="choice"><input type="radio" name="menu" value="arrange"><span>崩れにくいヘアアレンジ</span></label>
+                <label class="choice"><input type="radio" name="menu" value="trim" checked><span>ふんわり可愛い全身トリミング</span></label>
+                <label class="choice"><input type="radio" name="menu" value="spa"><span>皮膚にやさしい炭酸スパ</span></label>
+                <label class="choice"><input type="radio" name="menu" value="cut"><span>顔まわりすっきり夏カット</span></label>
               </div>
             </div>
 
@@ -807,7 +807,7 @@
             <h3>自動生成される投稿案</h3>
             <p>実運用では投稿文を自動生成し、設定した日時にInstagram投稿まで進めます。</p>
             <div class="post-preview">
-              <img id="generatedImage" src="assets/style-bob.png" alt="生成対象のスタイル写真">
+              <img id="generatedImage" src="assets/pet-trim.svg" alt="投稿に使う写真（プレースホルダー）">
               <div>
                 <span class="output-label">自動生成プレビュー</span>
                 <h3 id="generatedTitle" class="generated-title"></h3>
@@ -841,7 +841,7 @@
               <span class="routine-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="10" r="1.5"/><path d="M20 17l-5-5L5 19"/></svg></span>
             </div>
             <h3>画像を用意</h3>
-            <p>施術後のスタイル写真など、Instagramに載せたい画像を指定フォルダやシートへ登録します。</p>
+            <p>トリミング後の写真など、Instagramに載せたい画像を指定フォルダやシートへ登録します。</p>
             <span class="owner">お店</span>
           </article>
           <div class="routine-arrow" aria-hidden="true">→</div>
@@ -851,7 +851,7 @@
               <span class="routine-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg></span>
             </div>
             <h3>ポイントを伝える</h3>
-            <p>「朝のセットが楽」「赤みを抑えたカラー」など、今回伝えたい内容を短く指定します。</p>
+            <p>「ふわふわに仕上がった」「初めてのトリミング」など、今回伝えたい内容を短く指定します。</p>
             <span class="owner">お店</span>
           </article>
           <div class="routine-arrow" aria-hidden="true">→</div>
@@ -918,41 +918,41 @@
     </section>
   </main>
 
-  <footer><span>美容室向け Instagram運用自動化デモ</span><span>Google Spreadsheet + Google Apps Script</span></footer>
+  <footer><span>ペットサロン向け Instagram運用自動化デモ</span><span>Google Spreadsheet + Google Apps Script</span></footer>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <script>
     const menuData = {
-      bob: {
-        image: "assets/style-bob.png",
-        name: "艶ボブ",
-        friendly: "梅雨でもまとまりやすい、つやっとしたボブスタイル。\n\n乾かすだけでも形になりやすいよう、髪質に合わせて調整しています。朝のお手入れを少し楽にしたい方も、気軽にご相談ください。",
-        premium: "髪の艶と美しいラインを大切にした、端正なボブスタイル。\n\n湿気の多い季節にもまとまりやすいよう、髪質と日々のお手入れに合わせて丁寧に整えています。",
-        expert: "広がりやすい髪質を考慮し、重さを残す位置と毛先の収まりを調整したボブスタイルです。\n\n乾燥や湿度の影響を抑え、再現性を高めるホームケアもご案内します。",
-        tags: "#艶ボブ #ボブヘア #髪質改善 #美容室 #ヘアスタイル"
+      trim: {
+        image: "assets/pet-trim.svg",
+        name: "全身トリミング",
+        friendly: "ワンちゃんの毛質や体型に合わせて整えた、ふんわり仕上がりの全身トリミング。\n\nもつれやすい部分もすっきり、お家でのお手入れもぐっと楽に。初めてのトリミングのワンちゃんも、気軽にご相談ください。",
+        premium: "毛並みの美しさとシルエットを大切にした、上質な全身トリミング。\n\n被毛の状態と日々のお手入れに合わせて、丁寧に整えます。",
+        expert: "毛量・毛質・骨格を見極め、もつれやすい部位の収まりまで調整した全身トリミングです。\n\n皮膚への負担を抑え、次回までキレイが続くホームケアもご案内します。",
+        tags: "#トリミング #トリミングサロン #犬のいる暮らし #ペットサロン #愛犬"
       },
-      color: {
-        image: "assets/style-wave.png",
-        name: "透明感カラー",
-        friendly: "光に透ける、やわらかなベージュカラー。\n\n重たく見えにくい色味なので、伸ばしかけの方にもおすすめです。似合う明るさや色落ちも一緒に相談しましょう。",
-        premium: "光を含んだような透明感と、肌になじむベージュのニュアンス。\n\n髪の状態を見極めながら、品のあるやわらかな色合いに仕上げます。",
-        expert: "赤みを抑えながら透明感を引き出すベージュカラーです。\n\n現在の明るさとダメージ履歴を確認し、色落ちの過程まで考慮して薬剤を選定します。",
-        tags: "#透明感カラー #ベージュカラー #ミディアムヘア #美容室 #ヘアカラー"
+      spa: {
+        image: "assets/pet-spa.svg",
+        name: "炭酸スパケア",
+        friendly: "皮膚にやさしい、炭酸泡のスパシャンプー。\n\nデリケートな肌のワンちゃんにもおすすめです。ニオイや皮膚の調子も一緒にご相談しましょう。",
+        premium: "うるおいを守りながら汚れをやさしく落とす、上質な炭酸スパケア。\n\n肌と被毛の状態を見極めながら、健やかな毛艶に仕上げます。",
+        expert: "皮膚の状態と被毛のコンディションを確認し、低刺激な薬剤で洗浄する炭酸スパケアです。\n\n皮脂やニオイの原因にアプローチし、ホームケアまでご提案します。",
+        tags: "#犬のスパ #炭酸泉 #皮膚ケア #トリミングサロン #愛犬のいる暮らし"
       },
-      arrange: {
-        image: "assets/style-arrange.png",
-        name: "ヘアアレンジ",
-        friendly: "結婚式やお呼ばれの日に、やわらかな編みおろしアレンジ。\n\n服装やアクセサリーに合わせたご相談も大歓迎です。ご予定がお決まりの方は早めにご連絡ください。",
-        premium: "特別な日の装いに寄り添う、上品な編みおろしスタイル。\n\n全体のバランスと繊細な質感にこだわり、後ろ姿まで美しく仕上げます。",
-        expert: "崩れにくさを保ちながら、編み目と顔まわりに適度な抜け感を加えたアレンジです。\n\n髪の長さ、毛量、衣装に合わせて構成を調整します。",
-        tags: "#ヘアアレンジ #お呼ばれヘア #編みおろし #美容室 #ヘアセット"
+      cut: {
+        image: "assets/pet-cut.svg",
+        name: "夏のすっきりカット",
+        friendly: "暑い季節にうれしい、顔まわりすっきりの夏カット。\n\n清潔感をキープしつつ、可愛さもそのまま。お散歩前後のケアもお気軽にご相談ください。",
+        premium: "季節に寄り添う、清潔感のある夏の短めスタイル。\n\n全体のバランスと触り心地にこだわって仕上げます。",
+        expert: "暑さ対策と清潔保持を両立しつつ、伸びてもバランスが崩れにくい長さに調整した夏カットです。\n\n犬種・毛量・生活環境に合わせて構成します。",
+        tags: "#犬の夏カット #サマーカット #トリミング #ペットサロン #犬すたぐらむ"
       }
     };
 
     const goalCopy = {
-      booking: { dm: "気になる方はDMでお気軽にご相談ください。", reserve: "ご予約はプロフィールの予約ページから承ります。", visit: "カウンセリングで、今の髪に合う方法をご提案します。" },
-      trust: { dm: "髪のお悩みや施術について、DMでもご相談いただけます。", reserve: "髪質に合わせた施術をご希望の方は、予約ページをご覧ください。", visit: "まずはカウンセリングで髪の状態を丁寧に確認します。" },
-      repeat: { dm: "次回のスタイル相談もDMでお気軽にどうぞ。", reserve: "次回メンテナンスのご予約もプロフィールから承ります。", visit: "季節に合わせたメンテナンスもご相談ください。" }
+      booking: { dm: "気になる方はDMでお気軽にご相談ください。", reserve: "ご予約はプロフィールの予約ページから承ります。", visit: "カウンセリングで、愛犬に合うケアをご提案します。" },
+      trust: { dm: "毛や皮膚のお悩みも、DMでお気軽にご相談いただけます。", reserve: "犬種や毛質に合わせたトリミングをご希望の方は、予約ページをご覧ください。", visit: "まずはカウンセリングで愛犬の状態を丁寧に確認します。" },
+      repeat: { dm: "次回のトリミング相談もDMでお気軽にどうぞ。", reserve: "次回のご予約もプロフィールから承ります。", visit: "毛が伸びる周期に合わせたメンテナンスもご相談ください。" }
     };
 
     const form = document.getElementById("settingsForm");

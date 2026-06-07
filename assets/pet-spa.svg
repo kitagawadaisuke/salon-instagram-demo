@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" role="img" aria-label="炭酸スパケアの写真プレースホルダー">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5f7f79"/>
+      <stop offset="1" stop-color="#93aaa3"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#g)"/>
+  <g fill="#fffcf6" opacity="0.94">
+    <ellipse cx="300" cy="342" rx="82" ry="66"/>
+    <ellipse cx="270" cy="214" rx="28" ry="37"/>
+    <ellipse cx="330" cy="214" rx="28" ry="37"/>
+    <ellipse cx="210" cy="250" rx="25" ry="32"/>
+    <ellipse cx="390" cy="250" rx="25" ry="32"/>
+  </g>
+  <text x="300" y="468" text-anchor="middle" font-family="-apple-system, 'Hiragino Sans', sans-serif" font-size="28" font-weight="700" fill="#fffcf6">皮膚にやさしい炭酸スパ</text>
+  <text x="300" y="502" text-anchor="middle" font-family="-apple-system, 'Hiragino Sans', sans-serif" font-size="17" fill="#fffcf6" opacity="0.78">写真プレースホルダー</text>
+</svg>
