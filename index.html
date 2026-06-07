@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="画像と伝えたいポイントを用意すれば、投稿文生成からInstagram投稿まで自動で運用できる美容室向けデモ。">
+  <title>美容室向け Instagram運用自動化</title>
+  <style>
+    :root {
+      --paper: #f4f0e8;
+      --surface: #fffdf8;
+      --ink: #242522;
+      --muted: #74746d;
+      --line: #d8d2c6;
+      --sage: #657466;
+      --sage-soft: #dfe5dc;
+      --clay: #b9674f;
+      --gold: #b89558;
+      --dark: #1f2822;
+      --shadow: 0 22px 64px rgba(42, 38, 30, .12);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: "Avenir Next", "Hiragino Sans", sans-serif;
+    }
+
+    button, select, input { font: inherit; }
+    button { cursor: pointer; }
+    img { display: block; max-width: 100%; }
+
+    :focus-visible { outline: 2px solid var(--sage); outline-offset: 3px; }
+
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 68px;
+      padding: 10px clamp(18px, 5vw, 72px);
+      color: #fff;
+      background: var(--dark);
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(255,255,255,.5);
+      border-radius: 50%;
+      font-family: Didot, serif;
+      font-size: 21px;
+    }
+
+    .brand strong {
+      display: block;
+      font-family: Didot, "Hiragino Mincho ProN", serif;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .brand small { display: block; color: #b8c1b8; font-size: 9px; }
+
+    .nav-links { display: flex; align-items: center; gap: 20px; }
+    .nav-links a { color: #d5dbd5; text-decoration: none; font-size: 12px; }
+
+    .nav-links .sheet-link {
+      padding: 10px 15px;
+      color: var(--dark);
+      background: #f7f3ea;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(420px, .95fr);
+      min-height: calc(100dvh - 68px);
+    }
+
+    .hero-copy {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 70px clamp(28px, 7vw, 104px);
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 0 0 24px;
+      color: var(--sage);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      background: currentColor;
+      border-radius: 50%;
+    }
+
+    h1, h2 {
+      margin: 0;
+      font-family: Didot, "Hiragino Mincho ProN", serif;
+      font-weight: 500;
+      text-wrap: balance;
+    }
+
+    h1 {
+      max-width: 780px;
+      font-size: clamp(48px, 5vw, 74px);
+      line-height: 1.1;
+      word-break: keep-all;
+      overflow-wrap: normal;
+    }
+
+    .hero-line { display: block; }
+
+    .lead {
+      max-width: 650px;
+      margin: 30px 0 0;
+      color: var(--muted);
+      font-size: clamp(16px, 1.5vw, 21px);
+      line-height: 1.95;
+    }
+
+    .hero-points {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 30px 0 0;
+    }
+
+    .hero-points span {
+      padding: 8px 12px;
+      color: var(--sage);
+      background: var(--sage-soft);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 38px; }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 50px;
+      padding: 0 22px;
+      border: 1px solid var(--dark);
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 700;
+      transition: transform 160ms ease-out;
+    }
+
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { color: #fff; background: var(--dark); }
+    .button-secondary { color: var(--ink); }
+
+    .hero-visual {
+      position: relative;
+      min-height: 650px;
+      overflow: hidden;
+      background: #ddd6c9;
+    }
+
+    .hero-visual > img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .hero-card {
+      position: absolute;
+      right: 7%;
+      bottom: 7%;
+      width: min(360px, 82%);
+      padding: 22px;
+      background: rgba(255,253,248,.96);
+      border: 1px solid rgba(255,255,255,.75);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .hero-card small { color: var(--sage); font-weight: 700; }
+    .hero-card strong { display: block; margin: 9px 0 5px; font-size: 20px; }
+    .hero-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+
+    .section { padding: 108px clamp(22px, 7vw, 104px); }
+    .section-inner { width: min(1160px, 100%); margin: 0 auto; }
+
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(280px, .55fr);
+      gap: 60px;
+      align-items: end;
+      margin-bottom: 60px;
+    }
+
+    h2 {
+      font-size: clamp(30px, 3.9vw, 54px);
+      line-height: 1.24;
+      word-break: keep-all;       /* fallback: 旧ブラウザでも文中の単語を割らない */
+      word-break: auto-phrase;    /* 日本語の文節単位で折り返す（カタカナ語を割らない） */
+      overflow-wrap: anywhere;    /* 極狭幅でも溢れさせない最終保険 */
+    }
+
+    .section-intro {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.9;
+    }
+
+    .relief { background: var(--surface); }
+
+    .before-after {
+      display: grid;
+      grid-template-columns: 1fr 90px 1fr;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .work-box {
+      min-height: 310px;
+      padding: 34px;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+    }
+
+    .work-box.before { background: #f1ede5; }
+    .work-box.after { color: #fff; background: var(--dark); border-color: var(--dark); }
+    .work-box small { display: block; margin-bottom: 28px; color: var(--clay); font-weight: 700; }
+    .work-box.after small { color: #bec8bf; }
+    .work-box h3 { margin: 0 0 24px; font-size: 28px; }
+    .work-box ul { margin: 0; padding-left: 1.2em; line-height: 2.15; }
+    .work-box.after ul { color: #dce2dc; }
+    .arrow { color: var(--clay); text-align: center; font-size: 40px; }
+
+    .result-line {
+      margin: 48px 0 0;
+      text-align: center;
+      font-size: clamp(24px, 3vw, 38px);
+      font-weight: 700;
+    }
+
+    .setup { background: var(--paper); }
+
+    .builder {
+      display: grid;
+      grid-template-columns: minmax(300px, .8fr) minmax(380px, 1.2fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .settings, .generated {
+      padding: 30px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .settings h3, .generated h3 { margin: 0 0 8px; font-size: 23px; }
+    .settings > p, .generated > p { margin: 0 0 25px; color: var(--muted); line-height: 1.75; }
+
+    .settings .settings-note {
+      display: flex;
+      gap: 10px;
+      margin: -8px 0 24px;
+      padding: 13px 15px;
+      color: var(--sage);
+      background: var(--sage-soft);
+      border-radius: 12px;
+      font-size: 12px;
+      line-height: 1.75;
+    }
+
+    .settings-note::before {
+      content: "例";
+      flex: none;
+      display: grid;
+      place-items: center;
+      width: 22px;
+      height: 22px;
+      color: #fff;
+      background: var(--sage);
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .field { margin-bottom: 20px; }
+    .field label { display: block; margin-bottom: 8px; font-size: 12px; font-weight: 700; }
+
+    .choices { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .choice {
+      position: relative;
+      cursor: pointer;
+    }
+
+    .choice input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .choice span {
+      display: block;
+      padding: 9px 13px;
+      color: var(--muted);
+      background: #f4f2ed;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      font-size: 12px;
+    }
+
+    .choice input:checked + span {
+      color: #fff;
+      background: var(--sage);
+      border-color: var(--sage);
+    }
+
+    select {
+      width: 100%;
+      padding: 11px 12px;
+      color: var(--ink);
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .generate-button {
+      width: 100%;
+      margin-top: 8px;
+      padding: 14px;
+      color: #fff;
+      background: var(--dark);
+      border: 0;
+      border-radius: 9px;
+      font-weight: 700;
+    }
+
+    .post-preview {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .post-preview img {
+      width: 220px;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 14px;
+    }
+
+    .output-label {
+      display: inline-block;
+      padding: 5px 9px;
+      color: var(--sage);
+      background: var(--sage-soft);
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .generated-title {
+      margin: 12px 0 0;
+      font-family: Didot, "Hiragino Mincho ProN", serif;
+      font-size: 23px;
+      line-height: 1.45;
+    }
+
+    .caption {
+      margin: 15px 0;
+      font-size: 13px;
+      line-height: 1.85;
+      white-space: pre-line;
+    }
+
+    .hashtags { color: var(--sage); font-size: 12px; line-height: 1.7; }
+
+    .schedule {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .schedule div {
+      padding: 12px;
+      background: #f3f0e9;
+      border-radius: 9px;
+    }
+
+    .schedule small { display: block; color: var(--muted); }
+    .schedule b { display: block; margin-top: 5px; font-size: 12px; }
+
+    .save-sheet {
+      display: inline-flex;
+      margin-top: 22px;
+      padding: 12px 17px;
+      color: #fff;
+      background: var(--sage);
+      border: 0;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .routine { background: var(--surface); }
+
+    /* phase track: お店(手動) → 自動 の切り替わりを一目で示す */
+    .routine-track {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 36px;
+    }
+
+    .routine-track .lane {
+      flex: 1 1 0;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      max-width: 340px;
+      padding: 13px 22px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+
+    .routine-track .lane i {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .routine-track .lane.manual {
+      justify-content: flex-end;
+      color: var(--sage);
+      background: var(--sage-soft);
+      border-radius: 999px 0 0 999px;
+    }
+
+    .routine-track .lane.auto {
+      color: #fff;
+      background: var(--dark);
+      border-radius: 0 999px 999px 0;
+    }
+
+    .routine-track .seam {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin: 0 -10px;
+      padding: 11px 18px;
+      color: #fff;
+      background: var(--clay);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: var(--shadow);
+    }
+
+    .routine-flow {
+      display: grid;
+      grid-template-columns: 1fr 38px 1fr 38px 1fr 38px 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .routine-arrow {
+      display: grid;
+      place-items: center;
+      color: var(--clay);
+      font-size: 24px;
+    }
+
+    .routine-step {
+      display: flex;
+      flex-direction: column;
+      min-height: 270px;
+      padding: 28px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      transition: transform 220ms ease-out, box-shadow 220ms ease-out;
+    }
+
+    .routine-step:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+    .routine-step.gas { color: #fff; background: var(--dark); border-color: var(--dark); }
+
+    .routine-step-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 26px;
+    }
+
+    .routine-step .number { color: var(--clay); font-family: Didot, serif; font-size: 31px; line-height: 1; }
+
+    .routine-icon {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      color: var(--sage);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+    }
+
+    .routine-icon svg { width: 22px; height: 22px; }
+    .routine-step.gas .routine-icon { color: #fff; background: #2a342d; border-color: #455248; }
+
+    .routine-step h3 { margin: 0 0 12px; font-size: 23px; }
+    .routine-step p { margin: 0; color: var(--muted); line-height: 1.85; }
+    .routine-step.gas p { color: #d7ded8; }
+
+    .owner {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      align-self: flex-start;
+      margin-top: auto;
+      padding: 6px 12px;
+      color: var(--sage);
+      background: var(--sage-soft);
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+
+    .owner::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .gas .owner { color: #cdd6cd; background: #2a342d; }
+
+    .sheet-section { background: var(--paper); }
+
+    .sheet-stage {
+      padding: 18px;
+      background: #e7e1d7;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .sheet-stage img { border-radius: 12px; }
+
+    .sheet-points {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .sheet-point {
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      transition: transform 220ms ease-out, box-shadow 220ms ease-out;
+    }
+
+    .sheet-point:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+
+    .sheet-point b { display: block; margin-bottom: 8px; font-size: 14px; }
+    .sheet-point p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.7; }
+
+    .system { color: #fff; background: var(--dark); }
+    .system .eyebrow { color: #bdc7bd; }
+    .system .section-intro { color: #bdc5bd; }
+
+    .system-flow {
+      display: grid;
+      grid-template-columns: 1fr 70px 1fr 70px 1fr;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .system-box {
+      min-height: 210px;
+      padding: 27px;
+      background: #2a342d;
+      border: 1px solid #455248;
+      border-radius: 17px;
+    }
+
+    .system-box small { color: #b9c3ba; font-weight: 700; }
+    .system-box h3 { margin: 35px 0 13px; font-size: 23px; }
+    .system-box p { margin: 0; color: #d5dcd6; line-height: 1.8; }
+    .system-arrow { color: var(--clay); text-align: center; font-size: 30px; }
+
+    .closing {
+      padding: 90px 22px;
+      background: var(--surface);
+      text-align: center;
+    }
+
+    .closing h2 { max-width: 900px; margin: 0 auto; }
+    .closing p { max-width: 680px; margin: 24px auto 34px; color: var(--muted); line-height: 1.9; }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 30;
+      padding: 14px 18px;
+      color: #fff;
+      background: var(--dark);
+      border-radius: 8px;
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 160ms ease-out, transform 160ms ease-out;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 22px clamp(20px, 5vw, 72px);
+      color: var(--muted);
+      background: #ebe6dc;
+      font-size: 10px;
+    }
+
+    @media (max-width: 960px) {
+      .hero { grid-template-columns: minmax(0, 1fr); }
+      .hero-visual { min-height: 620px; }
+      .section-head, .builder { grid-template-columns: 1fr; gap: 26px; }
+      .before-after { grid-template-columns: 1fr; }
+      .arrow { transform: rotate(90deg); }
+      .routine-flow { grid-template-columns: 1fr; }
+      .routine-arrow { transform: rotate(90deg); }
+      .sheet-points { grid-template-columns: 1fr 1fr; }
+      .system-flow { grid-template-columns: 1fr; }
+      .system-arrow { transform: rotate(90deg); }
+    }
+
+    @media (max-width: 640px) {
+      html { scroll-behavior: auto; }
+      .nav { min-height: 62px; padding: 9px 14px; }
+      .nav-links a:not(.sheet-link) { display: none; }
+      .sheet-link { padding: 8px 11px !important; font-size: 10px !important; }
+      .hero-copy { padding: 72px 20px; }
+      h1 {
+        font-size: clamp(32px, 10vw, 46px);
+        word-break: keep-all;
+        overflow-wrap: anywhere;
+      }
+      .hero-visual { min-height: 500px; }
+      .section { padding: 76px 17px; }
+      .routine-track { flex-direction: column; }
+      .routine-track .lane { width: 100%; max-width: 320px; justify-content: center; }
+      .routine-track .lane.manual { border-radius: 14px 14px 0 0; }
+      .routine-track .lane.auto { border-radius: 0 0 14px 14px; }
+      .routine-track .seam { margin: -8px 0; }
+      .post-preview { grid-template-columns: 1fr; }
+      .post-preview img { width: 100%; }
+      .schedule { grid-template-columns: 1fr; }
+      .sheet-points { grid-template-columns: 1fr; }
+      footer { display: block; line-height: 1.8; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a class="brand" href="#top"><span class="brand-mark">m</span><span><strong>mellow hair</strong><small>Instagram operation demo</small></span></a>
+    <div class="nav-links">
+      <a href="#setup">投稿案を作る</a>
+      <a href="#routine">運用を見る</a>
+      <a class="sheet-link" href="sheet.html">管理シートを見る</a>
+    </div>
+  </nav>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Instagram operation assistant</p>
+        <h1><span class="hero-line">画像とポイントを</span><span class="hero-line">渡したら、</span><span class="hero-line">あとは自動で運用。</span></h1>
+        <p class="lead">用意するのは、投稿に使う画像と「今回伝えたいこと」だけ。その内容に沿って投稿文とハッシュタグを自動生成し、決めたスケジュールでInstagramへ自動投稿します。</p>
+        <div class="hero-points"><span>投稿文を自動生成</span><span>ハッシュタグも作成</span><span>予約日時に自動投稿</span><span>結果も自動記録</span></div>
+        <div class="actions"><a class="button button-primary" href="#setup">自動生成を試す</a><a class="button button-secondary" href="#routine">運用イメージを見る</a></div>
+      </div>
+      <div class="hero-visual">
+        <img src="assets/style-bob.png" alt="美容室のボブスタイル">
+        <aside class="hero-card"><small>用意するもの</small><strong>画像と、伝えたいポイントだけ。</strong><p>文章作成、ハッシュタグ選定、投稿、履歴更新まですべて自動で進みます。</p></aside>
+      </div>
+    </section>
+
+    <section class="section relief">
+      <div class="section-inner">
+        <header class="section-head">
+          <div><p class="eyebrow">What becomes easier</p><h2>投稿作業を、<br>毎週の仕事にしない。</h2></div>
+          <p class="section-intro">一度お店の方針と投稿スケジュールを決めれば、あとは画像とポイントを追加するだけ。日々の投稿作業はすべて自動化できます。</p>
+        </header>
+        <div class="before-after">
+          <article class="work-box before"><small>これまで</small><h3>投稿ごとに手作業</h3><ul><li>写真を探す</li><li>文章をゼロから考える</li><li>ハッシュタグを選ぶ</li><li>投稿日時を忘れず管理</li><li>投稿結果を確認する</li></ul></article>
+          <div class="arrow">→</div>
+          <article class="work-box after"><small>導入後</small><h3>画像とポイントを登録</h3><ul><li>投稿に使う画像を用意</li><li>伝えたいポイントを指定</li><li>文章とハッシュタグは自動生成</li><li>指定日時にInstagramへ自動投稿</li><li>結果はシートに自動記録</li></ul></article>
+        </div>
+        <p class="result-line">画像とポイントを用意した後は、<br>文面生成から投稿まで自動で運用。</p>
+      </div>
+    </section>
+
+    <section id="setup" class="section setup">
+      <div class="section-inner">
+        <header class="section-head">
+          <div><p class="eyebrow">Salon settings demo</p><h2>伝えたいポイントに従って、<br>投稿文を自動生成。</h2></div>
+          <p class="section-intro">得意な施術、文章の雰囲気、投稿の目的、頻度を最初に設定。以降はそのルールに沿って、毎回の投稿を自動で作成します。</p>
+        </header>
+
+        <div class="builder">
+          <form class="settings" id="settingsForm">
+            <h3>店舗の投稿方針</h3>
+            <p>選択すると右側の投稿案が変わります。</p>
+            <p class="settings-note">ここに並ぶ選択肢はあくまで一例です。メニュー内容・文章のトーン・投稿の目的・ハッシュタグなどは、お店に合わせて自由にカスタマイズできます。</p>
+
+            <div class="field">
+              <label>今回の投稿で伝えたいポイント</label>
+              <div class="choices">
+                <label class="choice"><input type="radio" name="menu" value="bob" checked><span>朝のお手入れが楽な艶ボブ</span></label>
+                <label class="choice"><input type="radio" name="menu" value="color"><span>肌になじむ透明感カラー</span></label>
+                <label class="choice"><input type="radio" name="menu" value="arrange"><span>崩れにくいヘアアレンジ</span></label>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="tone">文章のトーン</label>
+              <select id="tone">
+                <option value="friendly">親しみやすく、やわらかい</option>
+                <option value="premium">上品で落ち着いた雰囲気</option>
+                <option value="expert">プロとして専門的に説明</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="goal">投稿の目的</label>
+              <select id="goal">
+                <option value="booking">予約・相談につなげる</option>
+                <option value="trust">技術やこだわりを伝える</option>
+                <option value="repeat">既存のお客様に再来店を促す</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="frequency">投稿頻度</label>
+              <select id="frequency"><option value="1">週1回</option><option value="2" selected>週2回</option><option value="3">週3回</option></select>
+            </div>
+
+            <div class="field">
+              <label for="cta">最後に案内したいこと</label>
+              <select id="cta"><option value="dm">DMで気軽に相談</option><option value="reserve">予約ページから予約</option><option value="visit">カウンセリングで相談</option></select>
+            </div>
+
+            <button class="generate-button" type="submit">この条件で投稿案を生成</button>
+          </form>
+
+          <article class="generated">
+            <h3>自動生成される投稿案</h3>
+            <p>実運用では投稿文を自動生成し、設定した日時にInstagram投稿まで進めます。</p>
+            <div class="post-preview">
+              <img id="generatedImage" src="assets/style-bob.png" alt="生成対象のスタイル写真">
+              <div>
+                <span class="output-label">自動生成プレビュー</span>
+                <h3 id="generatedTitle" class="generated-title"></h3>
+                <div id="generatedCaption" class="caption"></div>
+                <div id="generatedTags" class="hashtags"></div>
+              </div>
+            </div>
+            <div id="generatedSchedule" class="schedule"></div>
+            <a id="saveToSheet" class="save-sheet" href="sheet.html">この投稿案をシートで確認</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="routine" class="section routine">
+      <div class="section-inner">
+        <header class="section-head">
+          <div><p class="eyebrow">Weekly operation</p><h2>画像とポイントの後は、<br>すべて自動。</h2></div>
+          <p class="section-intro">お店が行うのは最初の素材準備だけ。投稿文生成、ハッシュタグ作成、Instagram投稿、履歴更新まで、すべて自動で行われます。</p>
+        </header>
+        <div class="routine-track" aria-hidden="true">
+          <span class="lane manual"><i></i>お店の準備 ・ STEP 01–02</span>
+          <span class="seam">ここから自動</span>
+          <span class="lane auto">自動で運用 ・ STEP 03–04<i></i></span>
+        </div>
+
+        <div class="routine-flow">
+          <article class="routine-step">
+            <div class="routine-step-top">
+              <span class="number">01</span>
+              <span class="routine-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="10" r="1.5"/><path d="M20 17l-5-5L5 19"/></svg></span>
+            </div>
+            <h3>画像を用意</h3>
+            <p>施術後のスタイル写真など、Instagramに載せたい画像を指定フォルダやシートへ登録します。</p>
+            <span class="owner">お店</span>
+          </article>
+          <div class="routine-arrow" aria-hidden="true">→</div>
+          <article class="routine-step">
+            <div class="routine-step-top">
+              <span class="number">02</span>
+              <span class="routine-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.5 8.5 0 0 1-12.3 7.6L3 21l1.9-5.7A8.5 8.5 0 1 1 21 11.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01"/></svg></span>
+            </div>
+            <h3>ポイントを伝える</h3>
+            <p>「朝のセットが楽」「赤みを抑えたカラー」など、今回伝えたい内容を短く指定します。</p>
+            <span class="owner">お店</span>
+          </article>
+          <div class="routine-arrow" aria-hidden="true">→</div>
+          <article class="routine-step gas">
+            <div class="routine-step-top">
+              <span class="number">03</span>
+              <span class="routine-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5l1.7 4.4 4.4 1.7-4.4 1.7L12 15.7l-1.7-4.4L5.9 9.6l4.4-1.7z"/><path d="M18.5 14l.7 1.9 1.9.7-1.9.7-.7 1.9-.7-1.9-1.9-.7 1.9-.7z"/></svg></span>
+            </div>
+            <h3>文面を自動生成</h3>
+            <p>お店のトーンや目的に合わせて、投稿文、タイトル、ハッシュタグを自動で作成します。</p>
+            <span class="owner">自動</span>
+          </article>
+          <div class="routine-arrow" aria-hidden="true">→</div>
+          <article class="routine-step gas">
+            <div class="routine-step-top">
+              <span class="number">04</span>
+              <span class="routine-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.5 3.5L11 14"/><path d="M21.5 3.5l-6.5 17-3.8-7.7L3.5 9z"/></svg></span>
+            </div>
+            <h3>自動投稿・記録</h3>
+            <p>設定日時にInstagramへ投稿し、投稿日時・投稿ID・エラーを管理シートへ戻します。</p>
+            <span class="owner">自動</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section sheet-section">
+      <div class="section-inner">
+        <header class="section-head">
+          <div><p class="eyebrow">Spreadsheet demo</p><h2>投稿の状況は、<br>1枚のシートで把握。</h2></div>
+          <p class="section-intro">投稿文、ハッシュタグ、画像URL、status、投稿日、エラーまで自動で一覧化。普段は見るだけ、必要なときだけ文章を修正できます。</p>
+        </header>
+        <div class="sheet-stage"><img src="demo-desktop.png" alt="GoogleスプレッドシートとGoogle Apps ScriptによるInstagram投稿管理"></div>
+        <div class="sheet-points">
+          <article class="sheet-point"><b>文章を直接修正</b><p>生成された文面が合わなければセル上で編集。</p></article>
+          <article class="sheet-point"><b>自動運用モード</b><p>生成後、そのまま設定日時の投稿対象へ。</p></article>
+          <article class="sheet-point"><b>メニュー操作</b><p>シート上のメニューから生成・投稿を手動実行も可能。</p></article>
+          <article class="sheet-point"><b>結果を自動記録</b><p>投稿日時、投稿ID、エラーをシートへ保存。</p></article>
+        </div>
+        <div class="actions"><a class="button button-primary" href="sheet.html">管理シートを操作する</a></div>
+      </div>
+    </section>
+
+    <section class="section system">
+      <div class="section-inner">
+        <header class="section-head">
+          <div><p class="eyebrow">How it works</p><h2>Spreadsheetで管理し、<br>システムが裏側で動く。</h2></div>
+          <p class="section-intro">外部の管理サービスを増やさず、Google環境の中で投稿作成から履歴管理まで完結します。</p>
+        </header>
+        <div class="system-flow">
+          <article class="system-box"><small>SPREADSHEET</small><h3>店舗の設定・投稿管理</h3><p>投稿方針、文章、画像URL、status、投稿結果を保存。</p></article>
+          <div class="system-arrow">→</div>
+          <article class="system-box"><small>GOOGLE APPS SCRIPT</small><h3>生成・投稿・更新</h3><p>画像とポイントをもとに文面を作り、時間主導トリガーで投稿と結果更新を実行。</p></article>
+          <div class="system-arrow">→</div>
+          <article class="system-box"><small>INSTAGRAM</small><h3>自動投稿</h3><p>店舗が設定した方針に沿った画像と文章を、指定スケジュールで公開。</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing">
+      <h2>画像とポイントを預けて、<br>Instagram運用を自動化。</h2>
+      <p>店舗の得意メニューや文章の雰囲気を最初に設定すれば、その方針に沿って投稿文生成からInstagram投稿まで自動で進みます。</p>
+      <a class="button button-primary" href="#setup">投稿案の生成を試す</a>
+    </section>
+  </main>
+
+  <footer><span>美容室向け Instagram運用自動化デモ</span><span>Google Spreadsheet + Google Apps Script</span></footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const menuData = {
+      bob: {
+        image: "assets/style-bob.png",
+        name: "艶ボブ",
+        friendly: "梅雨でもまとまりやすい、つやっとしたボブスタイル。\n\n乾かすだけでも形になりやすいよう、髪質に合わせて調整しています。朝のお手入れを少し楽にしたい方も、気軽にご相談ください。",
+        premium: "髪の艶と美しいラインを大切にした、端正なボブスタイル。\n\n湿気の多い季節にもまとまりやすいよう、髪質と日々のお手入れに合わせて丁寧に整えています。",
+        expert: "広がりやすい髪質を考慮し、重さを残す位置と毛先の収まりを調整したボブスタイルです。\n\n乾燥や湿度の影響を抑え、再現性を高めるホームケアもご案内します。",
+        tags: "#艶ボブ #ボブヘア #髪質改善 #美容室 #ヘアスタイル"
+      },
+      color: {
+        image: "assets/style-wave.png",
+        name: "透明感カラー",
+        friendly: "光に透ける、やわらかなベージュカラー。\n\n重たく見えにくい色味なので、伸ばしかけの方にもおすすめです。似合う明るさや色落ちも一緒に相談しましょう。",
+        premium: "光を含んだような透明感と、肌になじむベージュのニュアンス。\n\n髪の状態を見極めながら、品のあるやわらかな色合いに仕上げます。",
+        expert: "赤みを抑えながら透明感を引き出すベージュカラーです。\n\n現在の明るさとダメージ履歴を確認し、色落ちの過程まで考慮して薬剤を選定します。",
+        tags: "#透明感カラー #ベージュカラー #ミディアムヘア #美容室 #ヘアカラー"
+      },
+      arrange: {
+        image: "assets/style-arrange.png",
+        name: "ヘアアレンジ",
+        friendly: "結婚式やお呼ばれの日に、やわらかな編みおろしアレンジ。\n\n服装やアクセサリーに合わせたご相談も大歓迎です。ご予定がお決まりの方は早めにご連絡ください。",
+        premium: "特別な日の装いに寄り添う、上品な編みおろしスタイル。\n\n全体のバランスと繊細な質感にこだわり、後ろ姿まで美しく仕上げます。",
+        expert: "崩れにくさを保ちながら、編み目と顔まわりに適度な抜け感を加えたアレンジです。\n\n髪の長さ、毛量、衣装に合わせて構成を調整します。",
+        tags: "#ヘアアレンジ #お呼ばれヘア #編みおろし #美容室 #ヘアセット"
+      }
+    };
+
+    const goalCopy = {
+      booking: { dm: "気になる方はDMでお気軽にご相談ください。", reserve: "ご予約はプロフィールの予約ページから承ります。", visit: "カウンセリングで、今の髪に合う方法をご提案します。" },
+      trust: { dm: "髪のお悩みや施術について、DMでもご相談いただけます。", reserve: "髪質に合わせた施術をご希望の方は、予約ページをご覧ください。", visit: "まずはカウンセリングで髪の状態を丁寧に確認します。" },
+      repeat: { dm: "次回のスタイル相談もDMでお気軽にどうぞ。", reserve: "次回メンテナンスのご予約もプロフィールから承ります。", visit: "季節に合わせたメンテナンスもご相談ください。" }
+    };
+
+    const form = document.getElementById("settingsForm");
+    const image = document.getElementById("generatedImage");
+    const title = document.getElementById("generatedTitle");
+    const caption = document.getElementById("generatedCaption");
+    const tags = document.getElementById("generatedTags");
+    const schedule = document.getElementById("generatedSchedule");
+    const toast = document.getElementById("toast");
+    let current = {};
+
+    function getSettings() {
+      return {
+        menu: new FormData(form).get("menu"),
+        tone: document.getElementById("tone").value,
+        goal: document.getElementById("goal").value,
+        frequency: Number(document.getElementById("frequency").value),
+        cta: document.getElementById("cta").value
+      };
+    }
+
+    function generate() {
+      const settings = getSettings();
+      const item = menuData[settings.menu];
+      const generatedCaption = `${item[settings.tone]}\n\n${goalCopy[settings.goal][settings.cta]}`;
+      const days = ["水曜 19:00", "土曜 18:30", "月曜 20:00"];
+      image.src = item.image;
+      title.textContent = item.name;
+      caption.textContent = generatedCaption;
+      tags.textContent = item.tags;
+      schedule.innerHTML = days.slice(0, settings.frequency).map((day, index) =>
+        `<div><small>投稿案 ${index + 1}</small><b>${day}</b></div>`).join("");
+      current = {
+        ...settings,
+        title: item.name,
+        image: item.image,
+        caption: generatedCaption,
+        shortCaption: generatedCaption.split("\n\n")[0],
+        tags: item.tags,
+        schedule: days.slice(0, settings.frequency)
+      };
+      localStorage.setItem("salonInstagramDemo", JSON.stringify(current));
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      generate();
+      showToast("店舗の設定に合わせて投稿案を生成しました（デモ）");
+    });
+
+    form.addEventListener("change", generate);
+
+    document.getElementById("saveToSheet").addEventListener("click", () => {
+      localStorage.setItem("salonInstagramDemo", JSON.stringify(current));
+    });
+
+    generate();
+  </script>
+</body>
+</html>

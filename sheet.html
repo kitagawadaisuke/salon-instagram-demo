@@ -1,0 +1,652 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Instagram 投稿管理シート | Demo</title>
+  <style>
+    :root {
+      --bg: #f8f9fa;
+      --surface: #fff;
+      --ink: #202124;
+      --muted: #5f6368;
+      --line: #dadce0;
+      --green: #188038;
+      --green-soft: #e6f4ea;
+      --yellow: #f9ab00;
+      --yellow-soft: #fef7e0;
+      --blue: #1a73e8;
+      --blue-soft: #e8f0fe;
+      --red: #d93025;
+      --red-soft: #fce8e6;
+      --dark: #1f2822;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      color: var(--ink);
+      background: var(--bg);
+      font-family: Arial, "Hiragino Sans", sans-serif;
+    }
+
+    button, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-height: 64px;
+      padding: 8px 18px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .sheet-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 44px;
+      color: #fff;
+      background: #0f9d58;
+      border-radius: 4px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .file-name { min-width: 0; }
+
+    .file-name strong {
+      display: block;
+      overflow: hidden;
+      font-size: 17px;
+      font-weight: 500;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .file-name span { color: var(--muted); font-size: 11px; }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-left: auto;
+    }
+
+    .demo-badge {
+      padding: 7px 11px;
+      color: var(--green);
+      background: var(--green-soft);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .proposal-link {
+      padding: 9px 14px;
+      color: #fff;
+      background: var(--dark);
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .menu {
+      display: flex;
+      gap: 4px;
+      padding: 5px 14px;
+      overflow-x: auto;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .menu span {
+      padding: 5px 8px;
+      color: #3c4043;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .gas-menu-wrap { position: relative; }
+
+    .gas-menu {
+      padding: 5px 10px;
+      color: #137333;
+      background: transparent;
+      border: 0;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .gas-menu[aria-expanded="true"] { background: var(--green-soft); }
+
+    .gas-dropdown {
+      position: absolute;
+      top: 30px;
+      left: 0;
+      z-index: 8;
+      display: none;
+      width: 270px;
+      padding: 7px 0;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      box-shadow: 0 8px 24px rgba(60,64,67,.2);
+    }
+
+    .gas-dropdown.open { display: block; }
+
+    .gas-dropdown button {
+      width: 100%;
+      padding: 10px 16px;
+      color: var(--ink);
+      background: transparent;
+      border: 0;
+      text-align: left;
+      font-size: 12px;
+    }
+
+    .gas-dropdown button:hover { background: #f1f3f4; }
+    .gas-dropdown hr { margin: 5px 0; border: 0; border-top: 1px solid var(--line); }
+
+    .formula {
+      display: flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 14px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .formula b {
+      width: 54px;
+      color: var(--ink);
+      font-weight: 400;
+    }
+
+    .formula i {
+      padding: 0 14px;
+      border-left: 1px solid var(--line);
+      font-family: serif;
+      font-size: 16px;
+    }
+
+    .notice {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px;
+      color: #174ea6;
+      background: var(--blue-soft);
+      border-bottom: 1px solid #c5d4f0;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .notice strong { flex: 0 0 auto; }
+
+    .gas-status {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 8px 18px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .gas-chip {
+      padding: 6px 10px;
+      color: #3c4043;
+      background: #f1f3f4;
+      border-radius: 999px;
+      font-size: 10px;
+    }
+
+    .gas-chip b { color: var(--green); }
+
+    .workspace { min-height: calc(100dvh - 183px); }
+
+    .sheet-wrap {
+      overflow: auto;
+      background: var(--surface);
+    }
+
+    table {
+      width: 2080px;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 12px;
+    }
+
+    th, td {
+      height: 42px;
+      padding: 7px 9px;
+      overflow: hidden;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    thead th {
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      height: 30px;
+      padding: 4px;
+      color: var(--muted);
+      background: #f1f3f4;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .row-no {
+      position: sticky;
+      left: 0;
+      z-index: 2;
+      width: 44px;
+      color: var(--muted);
+      background: #f1f3f4;
+      text-align: center;
+    }
+
+    thead .row-no { z-index: 4; }
+
+    .header-row td {
+      height: 28px;
+      color: #111;
+      background: #f1f3f4;
+      font-weight: 700;
+    }
+
+    .header-row .row-no {
+      color: var(--muted);
+      background: #f1f3f4;
+    }
+
+    .flow-row td {
+      height: 24px;
+      padding: 2px 5px;
+      color: #111;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .flow-row .transfer { background: #fbbc04; }
+    .flow-row .generate { color: #fff; background: #b31412; }
+    .flow-row .publish { background: #c9daf8; }
+    .flow-row .blank { background: #fff; }
+
+    .instruction-row td {
+      height: 28px;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .description-row td {
+      height: 25px;
+      padding: 3px 5px;
+      color: #111;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .description-row .transfer { background: #fbbc04; }
+    .description-row .generate { background: #e06666; }
+    .description-row .publish { background: #c9daf8; }
+    .description-row .neutral { background: #e6e6e6; }
+
+    .data-row { cursor: pointer; }
+    .data-row td {
+      height: 390px;
+      vertical-align: top;
+      white-space: normal;
+      line-height: 1.55;
+    }
+    .data-row:hover td:not(.row-no) { background: #f8fbf8; }
+    .data-row.selected td:not(.row-no) { background: #eaf3ec; }
+    .data-row.selected td { border-top: 2px solid var(--green); border-bottom: 2px solid var(--green); }
+    .data-row.selected td:nth-child(2) { border-left: 2px solid var(--green); }
+    .data-row.selected td:last-child { border-right: 2px solid var(--green); }
+
+    .caption-cell { color: #3c4043; }
+
+    .editable-cell {
+      background: #fff;
+      cursor: text;
+    }
+
+    .editable-cell:focus {
+      position: relative;
+      z-index: 2;
+      overflow: visible;
+      outline: 2px solid var(--blue);
+      white-space: normal;
+    }
+
+    .status-select {
+      width: 100%;
+      padding: 5px 7px;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      font-weight: 700;
+    }
+
+    .status-select.draft { color: #8a5d00; background: var(--yellow-soft); }
+    .status-select.ready { color: #137333; background: var(--green-soft); }
+    .status-select.posted { color: #174ea6; background: var(--blue-soft); }
+    .status-select.error { color: var(--red); background: var(--red-soft); }
+
+    .tabs {
+      position: sticky;
+      bottom: 0;
+      display: flex;
+      gap: 2px;
+      min-width: 800px;
+      padding: 7px 12px 0;
+      background: var(--surface);
+      border-top: 1px solid var(--line);
+    }
+
+    .tab {
+      padding: 9px 18px;
+      color: var(--muted);
+      border-bottom: 3px solid transparent;
+      font-size: 12px;
+    }
+
+    .tab.active {
+      color: var(--green);
+      border-color: var(--green);
+      font-weight: 700;
+    }
+
+    select:focus {
+      outline: 2px solid #8ab4f8;
+      outline-offset: 1px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      z-index: 10;
+      padding: 13px 17px;
+      color: #fff;
+      background: #3c4043;
+      border-radius: 6px;
+      box-shadow: 0 6px 20px rgba(60,64,67,.25);
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+      transition: opacity 160ms ease-out, transform 160ms ease-out;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 900px) {
+      .notice { align-items: flex-start; }
+    }
+
+    @media (max-width: 600px) {
+      .topbar { padding: 8px 12px; }
+      .file-name span { display: none; }
+      .demo-badge { display: none; }
+      .proposal-link { padding: 8px 10px; font-size: 10px; }
+      .notice { padding: 10px 12px; font-size: 11px; }
+      .workspace { min-height: auto; }
+      .sheet-wrap { max-height: 430px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="sheet-icon">▦</div>
+    <div class="file-name">
+      <strong>mellow hair｜Instagram 投稿管理</strong>
+      <span>店舗スタッフが確認するスプレッドシート</span>
+    </div>
+    <div class="top-actions">
+      <span class="demo-badge">DEMO</span>
+      <a class="proposal-link" href="index.html">提案資料へ戻る</a>
+    </div>
+  </header>
+
+  <div class="menu">
+    <span>ファイル</span><span>編集</span><span>表示</span><span>挿入</span><span>表示形式</span><span>データ</span><span>ツール</span>
+    <span class="gas-menu-wrap">
+      <button id="gasMenuButton" class="gas-menu" aria-expanded="false" aria-controls="gasDropdown">Instagram運用</button>
+      <span id="gasDropdown" class="gas-dropdown">
+        <button type="button" data-action="generate">投稿文・画像を生成</button>
+        <button type="button" data-action="publish">ready行を今すぐ投稿</button>
+        <hr>
+        <button type="button" data-action="trigger">GASトリガーを確認</button>
+      </span>
+    </span>
+  </div>
+  <div class="formula"><b id="cellName">D5</b><i>fx</i><span id="formulaText">湿気で広がりやすい季節に向けて...</span></div>
+  <div class="notice"><strong>自動運用モード</strong><span>画像と伝えたいポイントを登録すると、Google Apps Scriptが投稿文を生成し、設定日時にInstagramへ自動投稿します。必要な場合だけ、このシートで文章を修正できます。</span></div>
+  <div class="gas-status" aria-label="GASトリガー状況">
+    <span class="gas-chip"><b>GAS</b> 投稿文・画像生成：毎週 水曜 09:00</span>
+    <span id="publishTrigger" class="gas-chip"><b>GAS</b> ready行の投稿：毎週 水曜 19:00 / 土曜 18:30</span>
+    <span class="gas-chip"><b>管理</b> Spreadsheetで内容確認・履歴保存</span>
+  </div>
+
+  <main class="workspace">
+    <section class="sheet-wrap" aria-label="Instagram投稿管理表">
+      <table>
+        <colgroup>
+          <col style="width:44px">
+          <col style="width:160px"><col style="width:165px"><col style="width:180px"><col style="width:130px">
+          <col style="width:180px"><col style="width:190px"><col style="width:130px"><col style="width:310px">
+          <col style="width:150px"><col style="width:150px"><col style="width:135px"><col style="width:140px">
+          <col style="width:160px"><col style="width:150px">
+        </colgroup>
+        <thead>
+          <tr><th class="row-no"></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th><th>I</th><th>J</th><th>K</th><th>L</th><th>M</th><th>N</th></tr>
+        </thead>
+        <tbody>
+          <tr class="flow-row">
+            <td class="row-no">1</td>
+            <td class="transfer">Columnsから自動転記</td>
+            <td class="generate" colspan="4">GAS 自動生成フロー</td>
+            <td class="publish" colspan="9">GAS 自動投稿フロー</td>
+          </tr>
+          <tr class="instruction-row">
+            <td class="row-no">2</td>
+            <td colspan="4"></td>
+            <td colspan="10">※内容をご確認のうえ、問題なければステータスを「ready」に変更してください</td>
+          </tr>
+          <tr class="header-row">
+            <td class="row-no">3</td>
+            <td>ig_caption</td><td>ig_caption_short</td><td>title</td><td>ig_hashtags</td><td>status</td>
+            <td>image_url</td><td>posted_at</td><td>processing_status</td><td>ig_container_id</td><td>ig_media_id</td>
+            <td>error_message</td><td>updated_at</td><td>source_url</td><td>r2_object_key</td>
+          </tr>
+          <tr class="description-row">
+            <td class="row-no">4</td>
+            <td class="transfer">投稿本文</td><td class="generate">Instagram投稿文(長文)</td><td class="generate">コラムのタイトル</td>
+            <td class="generate">ハッシュタグ</td><td class="generate">draft=生成直後、ready=投稿OK、posted=投稿済</td>
+            <td class="publish">R2公開URL（Instagram投稿画像）</td><td class="publish">投稿時間</td>
+            <td class="publish">processing=自動処理中、done=正常完了、error=失敗</td>
+            <td class="neutral">アップロードした画像媒体ID</td><td class="neutral">Instagram上に公開された投稿ID</td>
+            <td class="neutral">投稿そのもの</td><td class="neutral">処理更新日時</td><td class="publish">元画像のURL</td><td class="publish">R2に保存したキー</td>
+          </tr>
+          <tr class="data-row selected" data-index="0">
+            <td class="row-no">5</td>
+            <td class="caption-cell editable-cell" contenteditable="true"></td>
+            <td class="editable-cell" contenteditable="true"></td>
+            <td id="postTitle">梅雨でもまとまる、艶ボブ</td>
+            <td class="editable-cell" contenteditable="true"></td>
+            <td><select class="status-select draft" aria-label="5行目のステータス"></select></td>
+            <td id="imageUrl">https://pub.example/ig/salon_001.jpg</td><td id="scheduledAt">2026-06-11 19:00</td><td>waiting</td>
+            <td></td><td></td><td></td><td>2026-06-07 16:20</td>
+            <td>https://pub.example/ig/salon_001.jpg</td><td>ig/salon_001.jpg</td>
+          </tr>
+          <tr><td class="row-no">6</td><td colspan="14"></td></tr>
+          <tr><td class="row-no">7</td><td colspan="14"></td></tr>
+        </tbody>
+      </table>
+      <div class="tabs"><span class="tab">Columns</span><span class="tab">Tweets</span><span class="tab active">Instagram</span><span class="tab">Settings</span></div>
+    </section>
+
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const posts = [{
+      status: "ready",
+      title: "梅雨でもまとまる、艶ボブ",
+      caption: "湿気で広がりやすい季節に、まとまりと艶を大切にしたボブスタイル。\n\n乾かすだけでも形になりやすいよう、髪質と普段のお手入れに合わせて調整しました。\n\n朝のスタイリングを少し楽にしたい方も、ぜひご相談ください。",
+      shortCaption: "梅雨でも扱いやすい、まとまり重視の艶ボブ。\n乾かし方やホームケアもお伝えします。",
+      tags: "#艶ボブ #ボブヘア #髪質改善 #美容室 #ヘアスタイル"
+    }];
+
+    const savedDemo = (() => {
+      try {
+        return JSON.parse(localStorage.getItem("salonInstagramDemo") || "null");
+      } catch {
+        return null;
+      }
+    })();
+
+    if (savedDemo) {
+      posts[0] = {
+        ...posts[0],
+        status: "ready",
+        title: savedDemo.title || posts[0].title,
+        caption: savedDemo.caption || posts[0].caption,
+        shortCaption: savedDemo.shortCaption || posts[0].shortCaption,
+        tags: savedDemo.tags || posts[0].tags
+      };
+    }
+
+    const statusOptions = ["draft", "ready", "posted", "error"];
+    const rows = [...document.querySelectorAll(".data-row")];
+    const cellName = document.getElementById("cellName");
+    const formulaText = document.getElementById("formulaText");
+    const toast = document.getElementById("toast");
+    const gasMenuButton = document.getElementById("gasMenuButton");
+    const gasDropdown = document.getElementById("gasDropdown");
+    const postTitle = document.getElementById("postTitle");
+    const imageUrl = document.getElementById("imageUrl");
+    const scheduledAt = document.getElementById("scheduledAt");
+    const publishTrigger = document.getElementById("publishTrigger");
+    let selected = 0;
+
+    function setSelect(select, value) {
+      select.innerHTML = statusOptions.map(option => `<option value="${option}">${option}</option>`).join("");
+      select.value = value;
+      select.className = `status-select ${value}`;
+    }
+
+    function fillRows() {
+      rows.forEach((row, index) => {
+        const cells = row.children;
+        cells[1].textContent = posts[index].caption;
+        cells[2].textContent = posts[index].shortCaption;
+        cells[4].textContent = posts[index].tags;
+        setSelect(cells[5].querySelector("select"), posts[index].status);
+      });
+
+      postTitle.textContent = posts[0].title;
+
+      if (savedDemo) {
+        const schedule = Array.isArray(savedDemo.schedule) ? savedDemo.schedule : [];
+        if (savedDemo.image) {
+          imageUrl.textContent = savedDemo.image;
+          imageUrl.title = savedDemo.image;
+        }
+        if (schedule[0]) scheduledAt.textContent = schedule[0];
+        if (schedule.length) {
+          publishTrigger.innerHTML = `<b>GAS</b> ready行の投稿：毎週 ${schedule.join(" / ")}`;
+        }
+      }
+    }
+
+    function renderSelection() {
+      rows.forEach((row, index) => row.classList.toggle("selected", index === selected));
+      const post = posts[selected];
+      cellName.textContent = `A${selected + 5}`;
+      formulaText.textContent = post.caption.replace(/\n/g, " ");
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      window.setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    gasMenuButton.addEventListener("click", () => {
+      const open = !gasDropdown.classList.contains("open");
+      gasDropdown.classList.toggle("open", open);
+      gasMenuButton.setAttribute("aria-expanded", String(open));
+    });
+
+    gasDropdown.querySelectorAll("button").forEach(button => {
+      button.addEventListener("click", () => {
+        const messages = {
+          generate: "GAS「投稿文・画像生成」を実行しました（デモ）",
+          publish: "GAS「ready行の自動投稿」を実行しました（デモ）",
+          trigger: savedDemo?.schedule?.length
+            ? `トリガー：水曜09:00 生成 / ${savedDemo.schedule.join("・")} 投稿（デモ）`
+            : "トリガー：水曜09:00 生成 / 水曜19:00・土曜18:30 投稿（デモ）"
+        };
+        showToast(messages[button.dataset.action]);
+        gasDropdown.classList.remove("open");
+        gasMenuButton.setAttribute("aria-expanded", "false");
+      });
+    });
+
+    rows.forEach((row, index) => {
+      row.addEventListener("click", event => {
+        if (event.target.tagName === "SELECT") return;
+        selected = index;
+        renderSelection();
+      });
+
+      row.querySelector("select").addEventListener("change", event => {
+        posts[index].status = event.target.value;
+        setSelect(event.target, event.target.value);
+        showToast(`${index + 5}行目を ${event.target.value} に変更しました。GASの処理対象になります（デモ）`);
+      });
+    });
+
+    document.querySelectorAll(".editable-cell").forEach(cell => {
+      cell.addEventListener("focus", () => {
+        const row = cell.closest(".data-row");
+        selected = Number(row.dataset.index);
+        rows.forEach((item, index) => item.classList.toggle("selected", index === selected));
+        cellName.textContent = `${String.fromCharCode(65 + cell.cellIndex - 1)}${selected + 5}`;
+        formulaText.textContent = cell.textContent;
+      });
+      cell.addEventListener("blur", () => {
+        const row = cell.closest(".data-row");
+        const index = Number(row.dataset.index);
+        if (cell.cellIndex === 1) posts[index].caption = cell.textContent;
+        if (cell.cellIndex === 2) posts[index].shortCaption = cell.textContent;
+        if (cell.cellIndex === 4) posts[index].tags = cell.textContent;
+        showToast(`${String.fromCharCode(65 + cell.cellIndex - 1)}${index + 5} を更新しました（デモ）`);
+      });
+    });
+
+    fillRows();
+    renderSelection();
+  </script>
+</body>
+</html>
